@@ -17,7 +17,7 @@ Route::get('/', function () {
 
 Route::get('/categoria', 'CategoriaController@index');
 
-Route::post('/categoria/registrar',' CategoriaController@store');
+Route::post('/categoria/registrar', 'CategoriaController@store');
 
 Route::put('/categoria/actualizar', 'CategoriaController@update');
 
