@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+//use Illuminate\Support\Facades\DB;
 use App\Categoria;
 
 class CategoriaController extends Controller
@@ -16,8 +17,19 @@ class CategoriaController extends Controller
     {   // seguridad
         if(!$request->ajax()) return redirect('/');
         //listar todos los registros de la tabla categoria
-        $categorias = Categoria::all();
-        return $categorias;
+        $categorias = Categoria::paginate(5);
+        return [
+            'pagination' => [
+                'total'        => $categorias->total(),
+                'current_page' => $categorias->currentPage(),
+                'per_page'     => $categorias->perPage(),
+                'last_page'    => $categorias->lastPage(),
+                'from'         => $categorias->firstItem(),
+                'to'           => $categorias->lastItem(),
+
+            ],
+            'categoria' => $categorias
+        ];
     }
 
     /**
