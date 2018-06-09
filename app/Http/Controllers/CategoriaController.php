@@ -17,7 +17,17 @@ class CategoriaController extends Controller
     {   // seguridad
         if(!$request->ajax()) return redirect('/');
         //listar todos los registros de la tabla categoria
-        $categorias = Categoria::paginate(5);
+
+        $buscar = $request->buscar;
+        $criterio = $request->criterio;
+
+        if($buscar ==''){
+            $categorias = Categoria::orderBy('id', 'desc')->paginate(5);
+        }
+        else{
+            $categorias = Categoria::where($criterio, 'like', '%'. $buscar . '%')->orderBy('id', 'desc')->paginate(5);
+        }
+      
         return [
             'pagination' => [
                 'total'        => $categorias->total(),
