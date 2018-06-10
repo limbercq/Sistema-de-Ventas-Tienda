@@ -49005,19 +49005,23 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 console.log(error);
             });
         },
-        actualizarCategoria: function actualizarCategoria() {
-            if (this.validadrCategoria()) {
+        actualizarArticulo: function actualizarArticulo() {
+            if (this.validadrArticulo()) {
                 return;
             }
             var me = this;
 
-            axios.put('/categoria/actualizar', {
+            axios.put('/articulo/actualizar', {
+                'idcategoria': this.idcategoria,
+                'codigo': this.codigo,
                 'nombre': this.nombre,
+                'stock': this.stock,
+                'precio_venta': this.precio_venta,
                 'descripcion': this.descripcion,
-                'id': this.categoria_id
+                'id': this.articulo_id
             }).then(function (response) {
                 me.cerrarModal();
-                me.listarCategoria(1, '', 'nombre');
+                me.listarArticulo(1, '', 'nombre');
             }).catch(function (error) {
                 console.log(error);
             });
