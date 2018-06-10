@@ -37,3 +37,10 @@ Route::put('/articulo/actualizar', 'ArticuloController@update');
 Route::put('/articulo/desactivar', 'ArticuloController@desactivar');
 
 Route::put('/articulo/activar', 'ArticuloController@activar');
+
+
+Route::get('/cliente', 'ClienteController@index');
+
+Route::post('/cliente/registrar', 'ClienteController@store');
+
+Route::put('/cliente/actualizar', 'ClienteController@update');
