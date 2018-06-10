@@ -38,7 +38,7 @@ class ArticuloController extends Controller
                 'to'           => $articulos->lastItem(),
 
             ],
-            'categoria' => $articulos
+            'articulos' => $articulos
         ];
     }
 
