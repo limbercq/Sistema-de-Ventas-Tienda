@@ -18,6 +18,8 @@ window.Vue = require('vue');
 Vue.component('categoria', require('./components/Categoria.vue'));
 // declarando el componente articulo
 Vue.component('articulo', require('./components/Articulo.vue'));
+// declarando el componente personas
+Vue.component('cliente', require('./components/Cliente.vue'));
 
 const app = new Vue({
     el: '#app',
