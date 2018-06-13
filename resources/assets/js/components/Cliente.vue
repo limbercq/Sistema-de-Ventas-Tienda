@@ -98,7 +98,7 @@
                                     <div class="col-md-9">
                                         <select v-model="tipo_documento" class="form-control">
                                             <option value="CI">CI</option>
-                                            <option value="RU">RUc</option>
+                                            <option value="NIT">NIT</option>
                                             <option value="PASS">PASS</option>
                                         </select>
                                     </div>

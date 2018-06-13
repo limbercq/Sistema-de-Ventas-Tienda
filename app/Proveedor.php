@@ -12,7 +12,7 @@ class Proveedor extends Model
     ];
 
     //en nuestra tabla no tiene los campos de timetamps
-    public $timetamps = false;
+    public $timestamps = false;
 
     // un proveedor pertenece a una persona
     public function persona()
