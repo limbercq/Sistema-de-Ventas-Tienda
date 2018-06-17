@@ -13,4 +13,10 @@ class Persona extends Model
     {
         return $this->hasOne('App\Proveedor');
     }
+
+    //una persona esta relacionada directamente con un usuario
+    public function user()
+    {
+        return $this->hasOne('App\User');
+    }
 }
