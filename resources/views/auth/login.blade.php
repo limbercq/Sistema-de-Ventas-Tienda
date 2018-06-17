@@ -5,17 +5,26 @@
       <div class="col-md-8">
         <div class="card-group mb-0">
           <div class="card p-4">
-          <form>
+            <!-- enviando a la ruta-->
+          <form class="form-horizontal was-validated" method="POST" action="{{ route('login')}}">
+            <!-- proteger de falcificaciones de sitios cross sat-->
+            {{ csrf_field() }}
             <div class="card-body">
               <h1>Acceder</h1>
               <p class="text-muted">Control de acceso al sistema</p>
-              <div class="form-group mb-3">
-                <span class="input-group-addon"><i class="icon-user"></i></span>
-                <input type="text" name="usuario" id="usuario" class="form-control" placeholder="Usuario">
+               <!-- --><!-- Lanzar un verificacion, si el usuario no coincide se va a poner la clase is-invalid  -->
+              <div class="form-group mb-3{{$errors->has('usuario' ? 'is-invalid' : '')}}">
+              <span class="input-group-addon"><i class="icon-user"></i></span>
+                <input type="text" value="{{old('usuario')}}" name="usuario" id="usuario" class="form-control" placeholder="Usuario">
+                <!-- mostrando el error  -->
+                {!!$errors->first('usuario','<span class="invalid-feedback">:message</span>')!!}
               </div>
-              <div class="form-group mb-4">
-                <span class="input-group-addon"><i class="icon-lock"></i></span>
-                <input type="password" name="clave" id="clave" class="form-control" placeholder="Password">
+              <!-- Lanzar un verificacion, si el usuario no coincide se va a poner la clase is-invalid  -->
+              <div class="form-group mb-4{{$errors->has('password' ? 'is-invalid' : '')}}">
+              <span class="input-group-addon"><i class="icon-lock"></i></span>
+                <input type="password" name="password" id="password" class="form-control" placeholder="Password">
+                <!-- mostrando el error  -->
+                {!!$errors->first('password','<span class="invalid-feedback">:message</span>')!!}
               </div>
               <div class="row">
                 <div class="col-6">

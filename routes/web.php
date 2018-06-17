@@ -11,9 +11,10 @@
 |
 */
 
-Route::get('/', function () {
+Route::get('/main', function () {
     return view('contenido/contenido');
-});
+    //aplicando un alias
+})->name('main');
 //                  catergoia
 Route::get('/categoria', 'CategoriaController@index');
 
@@ -68,6 +69,9 @@ Route::put('/user/desactivar', 'UserController@desactivar');
 Route::put('/user/activar', 'UserController@activar');
 
 //                  Login
-Auth::routes();
+Route::get('/','Auth\LoginController@showLoginForm');
+
+//ponniedo un alias a esta ruta
+Route::post('/login','Auth\LoginController@login')->name('login');
 
 Route::get('/home', 'HomeController@index')->name('home');
