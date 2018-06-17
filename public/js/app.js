@@ -56837,6 +56837,15 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     data: function data() {
@@ -56852,6 +56861,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             password: '',
             idrol: '',
             arrayPersona: [],
+            arrayRol: [],
             modal: 0,
             tituloModal: '',
             tipoAccion: 0,
@@ -56907,6 +56917,16 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                 var respuesta = response.data;
                 me.arrayPersona = respuesta.personas.data;
                 me.pagination = respuesta.pagination;
+            }).catch(function (error) {
+                console.log(error);
+            });
+        },
+        selectRol: function selectRol() {
+            var me = this;
+            var url = '/rol/selectRol';
+            axios.get(url).then(function (response) {
+                var respuesta = response.data;
+                me.arrayRol = respuesta.roles;
             }).catch(function (error) {
                 console.log(error);
             });
@@ -56979,18 +56999,20 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             this.modal = 0;
             this.tituloModal = '';
             this.nombre = '';
-            this.tipo_documento = 'NIT';
+            this.tipo_documento = 'CI';
             this.num_documento = '';
             this.direccion = '';
             this.telefono = '';
             this.email = '';
-            this.contacto = '';
-            this.telefono_contacto = '';
+            this.usuario = '';
+            this.password = '';
+            this.idrol = 0;
             this.errorPersona = 0;
         },
         abrirModal: function abrirModal(modelo, accion) {
             var data = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : [];
 
+            this.selectRol();
             switch (modelo) {
                 case "persona":
                     {
@@ -56998,22 +57020,23 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                             case 'registrar':
                                 {
                                     this.modal = 1;
-                                    this.tituloModal = 'Registrar Proveedor';
+                                    this.tituloModal = 'Registrar Usuario';
                                     this.nombre = '';
-                                    this.tipo_documento = 'NIT';
+                                    this.tipo_documento = 'CI';
                                     this.num_documento = '';
                                     this.direccion = '';
                                     this.telefono = '';
                                     this.email = '';
-                                    this.contacto = '';
-                                    this.telefono_contacto = '';
+                                    this.usuario = '';
+                                    this.password = '';
+                                    this.idrol = 0;
                                     this.tipoAccion = 1;
                                     break;
                                 }
                             case 'actualizar':
                                 {
                                     this.modal = 1;
-                                    this.tituloModal = 'Actualizar Proveedor';
+                                    this.tituloModal = 'Actualizar Usuario';
                                     this.tipoAccion = 2;
                                     this.persona_id = data['id'];
                                     this.nombre = data['nombre'];
@@ -57022,8 +57045,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                                     this.direccion = data['direccion'];
                                     this.telefono = data['telefono'];
                                     this.email = data['email'];
-                                    this.contacto = data['contacto'];
-                                    this.telefono_contacto = data['telefono_contacto'];
+                                    this.usuario = data['usuario'];
+                                    this.password = data['password'];
+                                    this.idrol = data['idrol'];
                                     break;
                                 }
                         }
@@ -57621,7 +57645,66 @@ var render = function() {
                           staticClass: "col-md-3 form-control-label",
                           attrs: { for: "text-input" }
                         },
-                        [_vm._v("Contacto")]
+                        [_vm._v("Rol")]
+                      ),
+                      _vm._v(" "),
+                      _c("div", { staticClass: "col-md-9" }, [
+                        _c(
+                          "select",
+                          {
+                            directives: [
+                              {
+                                name: "model",
+                                rawName: "v-model",
+                                value: _vm.idrol,
+                                expression: "idrol"
+                              }
+                            ],
+                            staticClass: "form-control",
+                            on: {
+                              change: function($event) {
+                                var $$selectedVal = Array.prototype.filter
+                                  .call($event.target.options, function(o) {
+                                    return o.selected
+                                  })
+                                  .map(function(o) {
+                                    var val = "_value" in o ? o._value : o.value
+                                    return val
+                                  })
+                                _vm.idrol = $event.target.multiple
+                                  ? $$selectedVal
+                                  : $$selectedVal[0]
+                              }
+                            }
+                          },
+                          [
+                            _c("option", { attrs: { value: "0" } }, [
+                              _vm._v("Seleccione un rol")
+                            ]),
+                            _vm._v(" "),
+                            _vm._l(_vm.arrayRol, function(rol) {
+                              return _c("option", {
+                                key: rol.id,
+                                domProps: {
+                                  value: rol.id,
+                                  textContent: _vm._s(rol.nombre)
+                                }
+                              })
+                            })
+                          ],
+                          2
+                        )
+                      ])
+                    ]),
+                    _vm._v(" "),
+                    _c("div", { staticClass: "form-group row" }, [
+                      _c(
+                        "label",
+                        {
+                          staticClass: "col-md-3 form-control-label",
+                          attrs: { for: "text-input" }
+                        },
+                        [_vm._v("Usuario (*)")]
                       ),
                       _vm._v(" "),
                       _c("div", { staticClass: "col-md-9" }, [
@@ -57630,22 +57713,22 @@ var render = function() {
                             {
                               name: "model",
                               rawName: "v-model",
-                              value: _vm.contacto,
-                              expression: "contacto"
+                              value: _vm.usuario,
+                              expression: "usuario"
                             }
                           ],
                           staticClass: "form-control",
                           attrs: {
                             type: "email",
-                            placeholder: "Nombre del contacto"
+                            placeholder: "Nombre de usuario"
                           },
-                          domProps: { value: _vm.contacto },
+                          domProps: { value: _vm.usuario },
                           on: {
                             input: function($event) {
                               if ($event.target.composing) {
                                 return
                               }
-                              _vm.contacto = $event.target.value
+                              _vm.usuario = $event.target.value
                             }
                           }
                         })
@@ -57659,7 +57742,7 @@ var render = function() {
                           staticClass: "col-md-3 form-control-label",
                           attrs: { for: "text-input" }
                         },
-                        [_vm._v("Telefono de Contacto")]
+                        [_vm._v("Password (*)")]
                       ),
                       _vm._v(" "),
                       _c("div", { staticClass: "col-md-9" }, [
@@ -57668,22 +57751,22 @@ var render = function() {
                             {
                               name: "model",
                               rawName: "v-model",
-                              value: _vm.telefono_contacto,
-                              expression: "telefono_contacto"
+                              value: _vm.password,
+                              expression: "password"
                             }
                           ],
                           staticClass: "form-control",
                           attrs: {
-                            type: "email",
-                            placeholder: "Telefono del contacto"
+                            type: "password",
+                            placeholder: "Password de acceso"
                           },
-                          domProps: { value: _vm.telefono_contacto },
+                          domProps: { value: _vm.password },
                           on: {
                             input: function($event) {
                               if ($event.target.composing) {
                                 return
                               }
-                              _vm.telefono_contacto = $event.target.value
+                              _vm.password = $event.target.value
                             }
                           }
                         })

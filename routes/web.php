@@ -14,7 +14,7 @@
 Route::get('/', function () {
     return view('contenido/contenido');
 });
-
+//                  catergoia
 Route::get('/categoria', 'CategoriaController@index');
 
 Route::post('/categoria/registrar', 'CategoriaController@store');
@@ -27,7 +27,7 @@ Route::put('/categoria/activar', 'CategoriaController@activar');
 
 Route::get('/categoria/selectCategoria', 'CategoriaController@selectCategoria');
 
-
+//                  articulos
 Route::get('/articulo', 'ArticuloController@index');
 
 Route::post('/articulo/registrar', 'ArticuloController@store');
@@ -38,25 +38,25 @@ Route::put('/articulo/desactivar', 'ArticuloController@desactivar');
 
 Route::put('/articulo/activar', 'ArticuloController@activar');
 
-
+//                  clientes
 Route::get('/cliente', 'ClienteController@index');
 
 Route::post('/cliente/registrar', 'ClienteController@store');
 
 Route::put('/cliente/actualizar', 'ClienteController@update');
 
-
+//                  proveedores
 Route::get('/proveedor', 'ProveedorController@index');
 
 Route::post('/proveedor/registrar', 'ProveedorController@store');
 
 Route::put('/proveedor/actualizar', 'ProveedorController@update');
 
-
+//                  rol
 Route::get('/rol', 'RolController@index');
+Route::get('/rol/selectRol', 'RolController@selectRol');
 
-
-
+//                  User
 Route::get('/user', 'UserController@index');
 
 Route::post('/user/registrar', 'UserController@store');

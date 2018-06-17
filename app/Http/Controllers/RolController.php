@@ -35,4 +35,14 @@ class RolController extends Controller
             'roles' => $roles
         ];
     }
+
+    //listamos todos con condicion 1 y lo devolvemos en un array
+    public function selectRol()
+    {
+        $roles = Rol::where('condicion','=','1')
+        ->select('id','nombre')
+        ->orderBy('nombre','asc')->get();
+
+        return['roles'=>$roles];
+    }
 }
