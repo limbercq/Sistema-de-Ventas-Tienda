@@ -22,6 +22,8 @@ Vue.component('articulo', require('./components/Articulo.vue'));
 Vue.component('cliente', require('./components/Cliente.vue'));
 // declarando el componente personas
 Vue.component('proveedor', require('./components/Proveedor.vue'));
+// declarando el componente personas
+Vue.component('rol', require('./components/Rol.vue'));
 
 const app = new Vue({
     el: '#app',
