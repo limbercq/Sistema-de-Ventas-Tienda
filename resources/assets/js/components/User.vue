@@ -47,7 +47,17 @@
                                     <td>
                                         <button type="button" @click="abrirModal('persona','actualizar',persona)" class="btn btn-warning btn-sm">
                                           <i class="icon-pencil"></i>
-                                        </button> &nbsp;                                        
+                                        </button> &nbsp; 
+                                        <template v-if="persona.condicion">
+                                            <button type="button" class="btn btn-danger btn-sm" @click="desactivarUsuario(persona.id)">
+                                                <i class="icon-trash"></i>
+                                            </button>
+                                        </template>
+                                        <template v-else>
+                                            <button type="button" class="btn btn-info btn-sm" @click="activarUsuario(persona.id)">
+                                                <i class="icon-check"></i>
+                                            </button>
+                                        </template>                                      
                                     </td>
                                     <td v-text="persona.nombre"></td>
                                    <td v-text="persona.tipo_documento"></td>
@@ -282,15 +292,16 @@
                 
                 let me = this;
 
-                axios.post('/proveedor/registrar',{
+                axios.post('/user/registrar',{
                     'nombre': this.nombre,
                     'tipo_documento': this.tipo_documento,
                     'num_documento' : this.num_documento,
                     'direccion' : this.direccion,
                     'telefono' : this.telefono,
                     'email' : this.email,
-                    'contacto': this.contacto,
-                    'telefono_contacto': this.telefono_contacto
+                    'usuario': this.usuario,
+                    'password': this.password,
+                    'idrol':this.idrol
 
                 }).then(function (response) {
                     me.cerrarModal();
@@ -305,15 +316,16 @@
                 }
                 let me=this;
 
-                axios.put('/proveedor/actualizar',{
+                axios.put('/user/actualizar',{
                     'nombre':this.nombre,
                     'tipo_documento':this.tipo_documento,
                     'num_documento':this.num_documento,
                     'direccion':this.direccion,
                     'telefono':this.telefono,
                     'email':this.email,
-                    'contacto': this.contacto,
-                    'telefono_contacto': this.telefono_contacto,
+                    'usuario': this.usuario,
+                    'password': this.password,
+                    'idrol':this.idrol,
                     'id':this.persona_id
                 }).then(function (response) {
                     me.cerrarModal();
@@ -328,6 +340,9 @@
                 this.errorMostrarMsjPersona=[];
 
                 if(!this.nombre) this.errorMostrarMsjPersona.push("El nombre de la persona no puede estar vacio");
+                if(!this.usuario) this.errorMostrarMsjPersona.push("El nombre del usuario no puede estar vacio");
+                if(!this.password) this.errorMostrarMsjPersona.push("El password no puede estar vacio");
+                if(this.idrol==0) this.errorMostrarMsjPersona.push("Debes seleccionar un rol para el usuario");
 
                 if(this.errorMostrarMsjPersona.length) this.errorPersona = 1;
                 
@@ -390,6 +405,94 @@
                         }
                     }                   
                 }
+            },
+            desactivarUsuario(id){
+                const swalWithBootstrapButtons = swal.mixin({
+                confirmButtonClass: 'btn btn-success',
+                cancelButtonClass: 'btn btn-danger',
+                buttonsStyling: false,
+                })
+
+                swalWithBootstrapButtons({
+                title: 'Esta seguro de desactivar este Usuario?',
+                type: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Aceptar',
+                cancelButtonText: 'Cancelar',
+                reverseButtons: true
+                }).then((result) => {
+                if (result.value) {
+                    let me=this;
+
+                    axios.put('/user/desactivar',{                        
+                        'id':id
+                    }).then(function (response) {                        
+                        me.listarPersona(1,'','nombre');
+                        swalWithBootstrapButtons(
+                        'Desactivado!',
+                        'El Usuario ha sido desactivado con exito.',
+                        'success'
+                        )
+                    })
+                    .catch(function (error) {
+                        console.log(error);
+                    });
+                    
+                } else if (
+                    // Read more about handling dismissals
+                    result.dismiss === swal.DismissReason.cancel
+                ) {/*
+                    swalWithBootstrapButtons(
+                    'Cancelled',
+                    'Your imaginary file is safe :)',
+                    'error'
+                    )*/
+                }
+                })
+            },
+            activarUsuario(id){
+                const swalWithBootstrapButtons = swal.mixin({
+                confirmButtonClass: 'btn btn-success',
+                cancelButtonClass: 'btn btn-danger',
+                buttonsStyling: false,
+                })
+
+                swalWithBootstrapButtons({
+                title: 'Esta seguro de activar este Usuario?',
+                type: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Aceptar',
+                cancelButtonText: 'Cancelar',
+                reverseButtons: true
+                }).then((result) => {
+                if (result.value) {
+                    let me=this;
+
+                    axios.put('/user/activar',{                        
+                        'id':id
+                    }).then(function (response) {                        
+                        me.listarPersona(1,'','nombre');
+                        swalWithBootstrapButtons(
+                        'Activado!',
+                        'El Usuario ha sido activado con exito.',
+                        'success'
+                        )
+                    })
+                    .catch(function (error) {
+                        console.log(error);
+                    });
+                    
+                } else if (
+                    // Read more about handling dismissals
+                    result.dismiss === swal.DismissReason.cancel
+                ) {/*
+                    swalWithBootstrapButtons(
+                    'Cancelled',
+                    'Your imaginary file is safe :)',
+                    'error'
+                    )*/
+                }
+                })
             }
         },
         mounted() {
