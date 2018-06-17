@@ -12,16 +12,16 @@
 */
 // ruata de invitados si no se an autenticado
 Route::group(['middleware' => ['guest']], function () {
+    Route::get('/','Auth\LoginController@showLoginForm');
     //ponniedo un alias a esta ruta
     Route::post('/login','Auth\LoginController@login')->name('login');
-
-   
 });
 
 Route::group(['middleware' => ['auth']], function () {
+   
+    Route::post('/logout','Auth\LoginController@logout')->name('logout');
+   
     // agregando todas las rutas a usuarios autenticados
-
-
     Route::get('/main', function () {
         return view('contenido/contenido');
         //aplicando un alias
