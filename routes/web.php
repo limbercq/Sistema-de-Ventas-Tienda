@@ -10,129 +10,79 @@
 | contains the "web" middleware group. Now create something great!
 |
 */
-// ruata de invitados si no se an autenticado
-Route::group(['middleware' => ['guest']], function () {
+
+Route::group(['middleware'=>['guest']],function(){
     Route::get('/','Auth\LoginController@showLoginForm');
-    //ponniedo un alias a esta ruta
-    Route::post('/login','Auth\LoginController@login')->name('login');
+    Route::post('/login', 'Auth\LoginController@login')->name('login');
 });
 
-Route::group(['middleware' => ['auth']], function () {
-   
-    Route::post('/logout','Auth\LoginController@logout')->name('logout');
-   
-    // agregando todas las rutas a usuarios autenticados
+Route::group(['middleware'=>['auth']],function(){
+    
+    Route::post('/logout', 'Auth\LoginController@logout')->name('logout');
+    
     Route::get('/main', function () {
         return view('contenido/contenido');
-        //aplicando un alias
     })->name('main');
 
     Route::group(['middleware' => ['Almacenero']], function () {
-        // Acceso a
-        //                  catergoia
         Route::get('/categoria', 'CategoriaController@index');
-        
         Route::post('/categoria/registrar', 'CategoriaController@store');
-        
         Route::put('/categoria/actualizar', 'CategoriaController@update');
-        
         Route::put('/categoria/desactivar', 'CategoriaController@desactivar');
-        
         Route::put('/categoria/activar', 'CategoriaController@activar');
-        
         Route::get('/categoria/selectCategoria', 'CategoriaController@selectCategoria');
 
-        //                  articulos
         Route::get('/articulo', 'ArticuloController@index');
-        
         Route::post('/articulo/registrar', 'ArticuloController@store');
-        
         Route::put('/articulo/actualizar', 'ArticuloController@update');
-        
         Route::put('/articulo/desactivar', 'ArticuloController@desactivar');
-        
         Route::put('/articulo/activar', 'ArticuloController@activar');
 
-        //                  proveedores
         Route::get('/proveedor', 'ProveedorController@index');
-        
         Route::post('/proveedor/registrar', 'ProveedorController@store');
-        
         Route::put('/proveedor/actualizar', 'ProveedorController@update');
-    
-    });
-    
-    Route::group(['middleware' => ['Vendedor']], function (){
-        // acceso a
-        //                  clientes
-        Route::get('/cliente', 'ClienteController@index');
-        
-        Route::post('/cliente/registrar', 'ClienteController@store');
-        
-        Route::put('/cliente/actualizar', 'ClienteController@update');
 
     });
-    
+
+    Route::group(['middleware' => ['Vendedor']], function () {
+        Route::get('/cliente', 'ClienteController@index');
+        Route::post('/cliente/registrar', 'ClienteController@store');
+        Route::put('/cliente/actualizar', 'ClienteController@update');
+    });
+
     Route::group(['middleware' => ['Administrador']], function () {
-        // acceso a
-        //                  catergoia
+        
         Route::get('/categoria', 'CategoriaController@index');
-        
         Route::post('/categoria/registrar', 'CategoriaController@store');
-        
         Route::put('/categoria/actualizar', 'CategoriaController@update');
-        
         Route::put('/categoria/desactivar', 'CategoriaController@desactivar');
-        
         Route::put('/categoria/activar', 'CategoriaController@activar');
-        
         Route::get('/categoria/selectCategoria', 'CategoriaController@selectCategoria');
 
-        //                  articulos
         Route::get('/articulo', 'ArticuloController@index');
-        
         Route::post('/articulo/registrar', 'ArticuloController@store');
-        
         Route::put('/articulo/actualizar', 'ArticuloController@update');
-        
         Route::put('/articulo/desactivar', 'ArticuloController@desactivar');
-        
         Route::put('/articulo/activar', 'ArticuloController@activar');
 
-        //                  proveedores
         Route::get('/proveedor', 'ProveedorController@index');
-        
         Route::post('/proveedor/registrar', 'ProveedorController@store');
-        
         Route::put('/proveedor/actualizar', 'ProveedorController@update');
-        //                  clientes
+        
         Route::get('/cliente', 'ClienteController@index');
-        
         Route::post('/cliente/registrar', 'ClienteController@store');
-        
         Route::put('/cliente/actualizar', 'ClienteController@update');
 
-        //                  rol
         Route::get('/rol', 'RolController@index');
         Route::get('/rol/selectRol', 'RolController@selectRol');
         
-        //                  User
         Route::get('/user', 'UserController@index');
-        
         Route::post('/user/registrar', 'UserController@store');
-        
         Route::put('/user/actualizar', 'UserController@update');
-        
         Route::put('/user/desactivar', 'UserController@desactivar');
-        
         Route::put('/user/activar', 'UserController@activar');
-        
-        //                  Login
-        Route::get('/','Auth\LoginController@showLoginForm');
-
     });
-    
+
 });
 
 //Route::get('/home', 'HomeController@index')->name('home');
-
