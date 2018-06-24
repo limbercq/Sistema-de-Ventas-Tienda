@@ -26,6 +26,8 @@ Vue.component('proveedor', require('./components/Proveedor.vue'));
 Vue.component('rol', require('./components/Rol.vue'));
 // declarando el componente User
 Vue.component('user', require('./components/User.vue'));
+// declarando el componente Ingreso
+Vue.component('ingreso', require('./components/Ingreso.vue'));
 
 const app = new Vue({
     el: '#app',
