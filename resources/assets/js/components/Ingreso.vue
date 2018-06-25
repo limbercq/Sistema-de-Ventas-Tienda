@@ -177,9 +177,9 @@
                                             </tr>
                                         </thead>
                                         <tbody v-if="arrayDetalle.length">
-                                            <tr v-for="detalle in arrayDetalle" :key="detalle.id">
+                                            <tr v-for="(detalle,index) in arrayDetalle" :key="detalle.id">
                                                 <td>
-                                                    <button type="button" class="btn btn-danger btn-sm">
+                                                    <button @click="elimnarDetalle(index)" type="button" class="btn btn-danger btn-sm">
                                                         <i class="icon-close"></i>
                                                     </button>
                                                 </td>
@@ -196,15 +196,15 @@
                                             </tr>                                            
                                             <tr style="background-color: #CEECF5;">
                                                 <td colspan="4" align="right"><strong>Total Parcial:</strong></td>
-                                                <td>$ 5</td>
+                                                <td>Bs. {{totalParcial= (total-totalImpuesto).toFixed(2)}} </td>
                                             </tr>
                                             <tr style="background-color: #CEECF5;">
                                                 <td colspan="4" align="right"><strong>Total Impuesto:</strong></td>
-                                                <td>$ 1</td>
+                                                <td>Bs. {{totalImpuesto=((total*impuesto)/(1+impuesto)).toFixed(2)}} </td>
                                             </tr>
                                             <tr style="background-color: #CEECF5;">
                                                 <td colspan="4" align="right"><strong>Total Neto:</strong></td>
-                                                <td>$ 6</td>
+                                                <td>Bs. {{total=calcularTotal}} </td>
                                             </tr>
                                         </tbody> 
                                         <tbody v-else>
@@ -267,7 +267,9 @@
                 num_comprobante : '',
                 sere_comprobante : '',
                 impuesto : '0.18',
-                total : '0.0',                
+                total : '0.0', 
+                totalImpuesto: 0.0,
+                totalParcial: 0.0,               
                 arrayIngreso :[],
                 arrayProveedor:[],
                 arrayDetalle:[],
@@ -325,7 +327,14 @@
                     from++;
                 }
                 return pagesArray;
-            }            
+            },          
+            calcularTotal: function(){
+                var resustado = 0.0;
+                for (var i = 0; i < this.arrayDetalle.length; i++) {
+                    resustado = resustado + (this.arrayDetalle[i].precio * this.arrayDetalle[i].cantidad);
+                }
+                return resustado;
+            }
         },
         methods : {
             listarIngreso (page,buscar,criterio){
@@ -396,6 +405,10 @@
                     }                    
                 }
                 return sw;
+            },
+            elimnarDetalle(index){
+                let me = this;
+                me.arrayDetalle.splice(index,1);
             },
             agregarDetalle(){
                 let me = this;
