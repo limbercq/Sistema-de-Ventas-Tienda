@@ -139,7 +139,7 @@
                                         <label>Artículo <span style="color:red;" v-show="idarticulo==0">(*Seleccione un articulo)</span></label>
                                         <div class="form-inline">
                                             <input type="text" class="form-control" v-model="codigo" @keyup.enter="busarArticulo" placeholder="Ingrese artículo">
-                                            <button class="btn btn-primary">...</button>
+                                            <button @click="abrirModal()" class="btn btn-primary">...</button>
                                             <input type="text" readonly class="form-control" v-model="articulo">
                                         </div>                                    
                                     </div>
@@ -240,7 +240,56 @@
                             </button>
                         </div>
                         <div class="modal-body">
-                           
+                            <div class="form-group row">
+                                <div class="col-md-6">
+                                    <div class="input-group">
+                                        <select class="form-control col-md-3" v-model="criterioA">
+                                        <option value="nombre">Nombre</option>
+                                        <option value="descripcion">Descripción</option>
+                                        <option value="codigo">Codigo</option>
+                                        </select>
+                                        <input type="text" v-model="buscarA" @keyup.enter="listarArticulo(buscarA,criterioA)" class="form-control" placeholder="Texto a buscar">
+                                        <button type="submit" @click="listarArticulo(buscarA,criterioA)" class="btn btn-primary"><i class="fa fa-search"></i> Buscar</button>
+                                    </div>
+                                </div>
+                            </div>
+                           <div class="table-responsive">
+                               <table class="table table-bordered table-striped table-sm">
+                                    <thead>
+                                        <tr>
+                                            <th>Opciones</th>
+                                            <th>Codigo</th>
+                                            <th>Nombre</th>
+                                            <th>Categoria</th>
+                                            <th>Precio Ventas</th>
+                                            <th>Stock</th>
+                                            <th>Estado</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr v-for="articulo in arrayArticulo" :key="articulo.id"> 
+                                            <td>
+                                                <button type="button" @click="agregarDetalleModal(articulo)" class="btn btn-success btn-sm">
+                                                <i class="icon-check"></i>
+                                                </button>
+                                            </td>
+                                            <td v-text="articulo.codigo"></td>
+                                            <td v-text="articulo.nombre"></td>
+                                            <td v-text="articulo.nombre_categoria"></td>
+                                            <td v-text="articulo.precio_venta"></td>
+                                            <td v-text="articulo.stock"></td>
+                                            <td>
+                                                <div v-if="articulo.condicion">
+                                                    <span class="badge badge-success">Activo</span>
+                                                </div>
+                                                <div v-else>
+                                                    <span class="badge badge-danger">Desactivado</span>
+                                                </div>
+                                            </td>
+                                        </tr>                                
+                                    </tbody>
+                               </table>
+                           </div>
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" @click="cerrarModal()">Cerrar</button>
@@ -265,7 +314,7 @@
                 idproveedor : '',
                 tipo_comprobante : 'FACTURA',
                 num_comprobante : '',
-                sere_comprobante : '',
+                serie_comprobante : '',
                 impuesto : '0.18',
                 total : '0.0', 
                 totalImpuesto: 0.0,
@@ -295,7 +344,9 @@
                 codigo: '',
                 articulo:'',
                 precio: 0,
-                cantidad: 0
+                cantidad: 0,
+                buscarA: '',
+                criterioA: 'nombre'
             }
         },
         components:{
@@ -437,6 +488,34 @@
                 }
                 
             },
+            agregarDetalleModal(data = []){                
+                let me = this;
+                if (me.encuentra(data['id'])) {
+                        swal({
+                            type: 'error',
+                            title: 'Error...',
+                            text: 'Este articulo ya se encuentra agreagado!',                   
+                            })
+                    } else {
+                         me.arrayDetalle.push({
+                            idarticulo: data['id'],
+                            articulo: data['nombre'],
+                            cantidad: 1,
+                            precio: 1
+                        });                        
+                    }       
+            },
+            listarArticulo (buscar,criterio){
+                let me=this;
+                var url= '/articulo/listarArticulo?buscar='+buscar + '&criterio='+criterio;
+                axios.get(url).then(function (response) {
+                    var respuesta= response.data;                    
+                    me.arrayArticulo = respuesta.articulos.data;    
+                })
+                .catch(function (error) {
+                    console.log(error);
+                });
+            },
             registrarPersona(){
                 if(this.validarPersona()){
                     return;
@@ -461,31 +540,6 @@
                 }).catch(function (error) {
                     console.log(error);
                 });
-            },
-            actualizarPersona(){
-                 if(this.validarPersona()){
-                    return;
-                }
-                let me=this;
-
-                axios.put('/user/actualizar',{
-                    'nombre':this.nombre,
-                    'tipo_documento':this.tipo_documento,
-                    'num_documento':this.num_documento,
-                    'direccion':this.direccion,
-                    'telefono':this.telefono,
-                    'email':this.email,
-                    'usuario': this.usuario,
-                    'password': this.password,
-                    'idrol':this.idrol,
-                    'id':this.persona_id
-                }).then(function (response) {
-                    me.cerrarModal();
-                    me.listarPersona(1,'','nombre');
-                })
-                .catch(function (error) {
-                    console.log(error);
-                });
             },            
             validarPersona(){
                 this.errorPersona=0;
@@ -508,61 +562,12 @@
             },
             cerrarModal(){
                 this.modal=0;
-                this.tituloModal='';
-                this.nombre='';
-                this.tipo_documento='CI';
-                this.num_documento='';
-                this.direccion='';
-                this.telefono='';
-                this.email='';
-                this.usuario='';
-                this.password='';
-                this.idrol=0;
-                this.errorPersona=0;
-
+                this.tituloModal='';                
             },
-            abrirModal(modelo, accion, data = []){
-               this.selectRol();
-               switch (modelo) {
-                    case "persona":
-                    {
-                        switch (accion) {
-                            case 'registrar':
-                             {
-                                 this.modal = 1;
-                                 this.tituloModal = 'Registrar Usuario';
-                                 this.nombre='';
-                                 this.tipo_documento='CI';
-                                 this.num_documento='';
-                                 this.direccion='';
-                                 this.telefono='';
-                                this.email='';
-                                this.usuario='';
-                                this.password='';
-                                this.idrol=0;
-                                this.tipoAccion = 1;
-                                 break;
-                             }    
-                            case 'actualizar':
-                             {
-                                 this.modal=1;
-                                 this.tituloModal='Actualizar Usuario';
-                                 this.tipoAccion=2;
-                                 this.persona_id= data['id'];
-                                 this.nombre = data['nombre'];
-                                 this.tipo_documento = data['tipo_documento'];
-                                 this.num_documento = data ['num_documento'];
-                                 this.direccion = data ['direccion'];
-                                 this.telefono = data['telefono'];
-                                 this.email = data['email'];
-                                 this.usuario = data['usuario'];
-                                 this.password = data['password'];
-                                 this.idrol = data['idrol'];
-                                 break;
-                             }                                                                               
-                        }
-                    }                   
-                }
+            abrirModal(){ 
+                this.arrayArticulo = [];              
+                this.modal = 1;
+                this.tituloModal = 'Seleccione uno o varios articulos';             
             },
             desactivarUsuario(id){
                 const swalWithBootstrapButtons = swal.mixin({
