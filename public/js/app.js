@@ -58389,17 +58389,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
 
 
 /* harmony default export */ __webpack_exports__["default"] = ({
@@ -58431,7 +58420,13 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             },
             offest: 3,
             criterio: 'num_comprobante',
-            buscar: ''
+            buscar: '',
+            arrayArticulo: [],
+            idarticulo: 0,
+            codigo: '',
+            articulo: '',
+            precio: 0,
+            cantidad: 0
         };
     },
 
@@ -58497,12 +58492,64 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             me.loading = true;
             me.idproveedor = val1.id;
         },
+        busarArticulo: function busarArticulo() {
+            var me = this;
+            var url = '/articulo/buscarArticulo?filtro=' + me.codigo;
+
+            axios.get(url).then(function (response) {
+                var respuesta = response.data;
+                me.arrayArticulo = respuesta.articulos;
+
+                if (me.arrayArticulo.length > 0) {
+                    me.articulo = me.arrayArticulo[0]['nombre'];
+                    me.idarticulo = me.arrayArticulo[0]['id'];
+                } else {
+                    me.articulo = 'No existe articulo';
+                    me.idarticulo = 0;
+                }
+            }).catch(function (error) {
+                console.log(error);
+            });
+        },
         cambiarPagina: function cambiarPagina(page, buscar, criterio) {
             var me = this;
             //Actualiza la página actual
             me.pagination.current_page = page;
             //Envia la petición para visualizar la data de esa página
             me.listarIngreso(page, buscar, criterio);
+        },
+        encuentra: function encuentra(id) {
+            var sw = 0;
+            for (var i = 0; i < this.arrayDetalle.length; i++) {
+                if (this.arrayDetalle[i].idarticulo == id) {
+                    sw = true;
+                }
+            }
+            return sw;
+        },
+        agregarDetalle: function agregarDetalle() {
+            var me = this;
+            if (me.idarticulo == 0 || me.cantidad == 0 || me.precio == 0) {} else {
+                if (me.encuentra(me.idarticulo)) {
+                    swal({
+                        type: 'error',
+                        title: 'Error...',
+                        text: 'Este articulo ya se encuentra agreagado!'
+                    });
+                } else {
+                    me.arrayDetalle.push({
+                        idarticulo: me.idarticulo,
+                        articulo: me.articulo,
+                        cantidad: me.cantidad,
+                        precio: me.precio
+                    });
+                    me.codigo = "";
+                    me.idarticulo = 0;
+                    me.precio = 0;
+                    me.articulo = "";
+                    me.cantidad = 0;
+                }
+            }
         },
         registrarPersona: function registrarPersona() {
             if (this.validarPersona()) {
@@ -59239,7 +59286,24 @@ var render = function() {
                   _c("div", { staticClass: "form-group row border" }, [
                     _c("div", { staticClass: "col-md-6" }, [
                       _c("div", { staticClass: "form-group" }, [
-                        _c("label", [_vm._v("Artículo")]),
+                        _c("label", [
+                          _vm._v("Artículo "),
+                          _c(
+                            "span",
+                            {
+                              directives: [
+                                {
+                                  name: "show",
+                                  rawName: "v-show",
+                                  value: _vm.idarticulo == 0,
+                                  expression: "idarticulo==0"
+                                }
+                              ],
+                              staticStyle: { color: "red" }
+                            },
+                            [_vm._v("(*Seleccione un articulo)")]
+                          )
+                        ]),
                         _vm._v(" "),
                         _c("div", { staticClass: "form-inline" }, [
                           _c("input", {
@@ -59247,8 +59311,8 @@ var render = function() {
                               {
                                 name: "model",
                                 rawName: "v-model",
-                                value: _vm.idarticulo,
-                                expression: "idarticulo"
+                                value: _vm.codigo,
+                                expression: "codigo"
                               }
                             ],
                             staticClass: "form-control",
@@ -59256,27 +59320,81 @@ var render = function() {
                               type: "text",
                               placeholder: "Ingrese artículo"
                             },
-                            domProps: { value: _vm.idarticulo },
+                            domProps: { value: _vm.codigo },
                             on: {
+                              keyup: function($event) {
+                                if (
+                                  !("button" in $event) &&
+                                  _vm._k(
+                                    $event.keyCode,
+                                    "enter",
+                                    13,
+                                    $event.key,
+                                    "Enter"
+                                  )
+                                ) {
+                                  return null
+                                }
+                                return _vm.busarArticulo($event)
+                              },
                               input: function($event) {
                                 if ($event.target.composing) {
                                   return
                                 }
-                                _vm.idarticulo = $event.target.value
+                                _vm.codigo = $event.target.value
                               }
                             }
                           }),
                           _vm._v(" "),
                           _c("button", { staticClass: "btn btn-primary" }, [
                             _vm._v("...")
-                          ])
+                          ]),
+                          _vm._v(" "),
+                          _c("input", {
+                            directives: [
+                              {
+                                name: "model",
+                                rawName: "v-model",
+                                value: _vm.articulo,
+                                expression: "articulo"
+                              }
+                            ],
+                            staticClass: "form-control",
+                            attrs: { type: "text", readonly: "" },
+                            domProps: { value: _vm.articulo },
+                            on: {
+                              input: function($event) {
+                                if ($event.target.composing) {
+                                  return
+                                }
+                                _vm.articulo = $event.target.value
+                              }
+                            }
+                          })
                         ])
                       ])
                     ]),
                     _vm._v(" "),
                     _c("div", { staticClass: "col-md-2" }, [
                       _c("div", { staticClass: "form-group" }, [
-                        _c("label", [_vm._v("Precio")]),
+                        _c("label", [
+                          _vm._v("Precio "),
+                          _c(
+                            "span",
+                            {
+                              directives: [
+                                {
+                                  name: "show",
+                                  rawName: "v-show",
+                                  value: _vm.precio == 0,
+                                  expression: "precio==0"
+                                }
+                              ],
+                              staticStyle: { color: "red" }
+                            },
+                            [_vm._v("(*ingrese Precio)")]
+                          )
+                        ]),
                         _vm._v(" "),
                         _c("input", {
                           directives: [
@@ -59304,7 +59422,24 @@ var render = function() {
                     _vm._v(" "),
                     _c("div", { staticClass: "col-md-2" }, [
                       _c("div", { staticClass: "form-group" }, [
-                        _c("label", [_vm._v("Cantidad")]),
+                        _c("label", [
+                          _vm._v("Cantidad "),
+                          _c(
+                            "span",
+                            {
+                              directives: [
+                                {
+                                  name: "show",
+                                  rawName: "v-show",
+                                  value: _vm.cantidad == 0,
+                                  expression: "cantidad==0"
+                                }
+                              ],
+                              staticStyle: { color: "red" }
+                            },
+                            [_vm._v("(*ingrese)")]
+                          )
+                        ]),
                         _vm._v(" "),
                         _c("input", {
                           directives: [
@@ -59330,10 +59465,131 @@ var render = function() {
                       ])
                     ]),
                     _vm._v(" "),
-                    _vm._m(2)
+                    _c("div", { staticClass: "col-md-2" }, [
+                      _c("div", { staticClass: "form-group" }, [
+                        _c(
+                          "button",
+                          {
+                            staticClass:
+                              "btn btn-success form-control btnagregar",
+                            on: {
+                              click: function($event) {
+                                _vm.agregarDetalle()
+                              }
+                            }
+                          },
+                          [_c("i", { staticClass: "icon-plus" })]
+                        )
+                      ])
+                    ])
                   ]),
                   _vm._v(" "),
-                  _vm._m(3),
+                  _c("div", { staticClass: "form-group row border" }, [
+                    _c("div", { staticClass: "table-responsive col-md-12" }, [
+                      _c(
+                        "table",
+                        {
+                          staticClass:
+                            "table table-bordered table-striped table-sm"
+                        },
+                        [
+                          _vm._m(2),
+                          _vm._v(" "),
+                          _vm.arrayDetalle.length
+                            ? _c(
+                                "tbody",
+                                [
+                                  _vm._l(_vm.arrayDetalle, function(detalle) {
+                                    return _c("tr", { key: detalle.id }, [
+                                      _vm._m(3, true),
+                                      _vm._v(" "),
+                                      _c("td", {
+                                        domProps: {
+                                          textContent: _vm._s(detalle.articulo)
+                                        }
+                                      }),
+                                      _vm._v(" "),
+                                      _c("td", [
+                                        _c("input", {
+                                          directives: [
+                                            {
+                                              name: "model",
+                                              rawName: "v-model",
+                                              value: detalle.precio,
+                                              expression: "detalle.precio"
+                                            }
+                                          ],
+                                          staticClass: "form-control",
+                                          attrs: { type: "number", value: "3" },
+                                          domProps: { value: detalle.precio },
+                                          on: {
+                                            input: function($event) {
+                                              if ($event.target.composing) {
+                                                return
+                                              }
+                                              _vm.$set(
+                                                detalle,
+                                                "precio",
+                                                $event.target.value
+                                              )
+                                            }
+                                          }
+                                        })
+                                      ]),
+                                      _vm._v(" "),
+                                      _c("td", [
+                                        _c("input", {
+                                          directives: [
+                                            {
+                                              name: "model",
+                                              rawName: "v-model",
+                                              value: detalle.cantidad,
+                                              expression: "detalle.cantidad"
+                                            }
+                                          ],
+                                          staticClass: "form-control",
+                                          attrs: { type: "number", value: "2" },
+                                          domProps: { value: detalle.cantidad },
+                                          on: {
+                                            input: function($event) {
+                                              if ($event.target.composing) {
+                                                return
+                                              }
+                                              _vm.$set(
+                                                detalle,
+                                                "cantidad",
+                                                $event.target.value
+                                              )
+                                            }
+                                          }
+                                        })
+                                      ]),
+                                      _vm._v(" "),
+                                      _c("td", [
+                                        _vm._v(
+                                          "\n                                                 " +
+                                            _vm._s(
+                                              detalle.precio * detalle.cantidad
+                                            ) +
+                                            "                                                    \n                                             "
+                                        )
+                                      ])
+                                    ])
+                                  }),
+                                  _vm._v(" "),
+                                  _vm._m(4),
+                                  _vm._v(" "),
+                                  _vm._m(5),
+                                  _vm._v(" "),
+                                  _vm._m(6)
+                                ],
+                                2
+                              )
+                            : _c("tbody", [_vm._m(7)])
+                        ]
+                      )
+                    ])
+                  ]),
                   _vm._v(" "),
                   _c("div", { staticClass: "form-group row" }, [
                     _c("div", { staticClass: "col-md-12" }, [
@@ -59519,13 +59775,17 @@ var staticRenderFns = [
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "col-md-2" }, [
-      _c("div", { staticClass: "form-group" }, [
-        _c(
-          "button",
-          { staticClass: "btn btn-success form-control btnagregar" },
-          [_c("i", { staticClass: "icon-plus" })]
-        )
+    return _c("thead", [
+      _c("tr", [
+        _c("th", [_vm._v("Opciones")]),
+        _vm._v(" "),
+        _c("th", [_vm._v("Artículo")]),
+        _vm._v(" "),
+        _c("th", [_vm._v("Precio")]),
+        _vm._v(" "),
+        _c("th", [_vm._v("Cantidad")]),
+        _vm._v(" "),
+        _c("th", [_vm._v("Subtotal")])
       ])
     ])
   },
@@ -59533,130 +59793,58 @@ var staticRenderFns = [
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "form-group row border" }, [
-      _c("div", { staticClass: "table-responsive col-md-12" }, [
-        _c(
-          "table",
-          { staticClass: "table table-bordered table-striped table-sm" },
-          [
-            _c("thead", [
-              _c("tr", [
-                _c("th", [_vm._v("Opciones")]),
-                _vm._v(" "),
-                _c("th", [_vm._v("Artículo")]),
-                _vm._v(" "),
-                _c("th", [_vm._v("Precio")]),
-                _vm._v(" "),
-                _c("th", [_vm._v("Cantidad")]),
-                _vm._v(" "),
-                _c("th", [_vm._v("Subtotal")])
-              ])
-            ]),
-            _vm._v(" "),
-            _c("tbody", [
-              _c("tr", [
-                _c("td", [
-                  _c(
-                    "button",
-                    {
-                      staticClass: "btn btn-danger btn-sm",
-                      attrs: { type: "button" }
-                    },
-                    [_c("i", { staticClass: "icon-close" })]
-                  )
-                ]),
-                _vm._v(" "),
-                _c("td", [
-                  _vm._v(
-                    "\n                                                 Artículo n\n                                             "
-                  )
-                ]),
-                _vm._v(" "),
-                _c("td", [
-                  _c("input", {
-                    staticClass: "form-control",
-                    attrs: { type: "number", value: "3" }
-                  })
-                ]),
-                _vm._v(" "),
-                _c("td", [
-                  _c("input", {
-                    staticClass: "form-control",
-                    attrs: { type: "number", value: "2" }
-                  })
-                ]),
-                _vm._v(" "),
-                _c("td", [
-                  _vm._v(
-                    "\n                                                 $ 6.00\n                                             "
-                  )
-                ])
-              ]),
-              _vm._v(" "),
-              _c("tr", [
-                _c("td", [
-                  _c(
-                    "button",
-                    {
-                      staticClass: "btn btn-danger btn-sm",
-                      attrs: { type: "button" }
-                    },
-                    [_c("i", { staticClass: "icon-close" })]
-                  )
-                ]),
-                _vm._v(" "),
-                _c("td", [
-                  _vm._v(
-                    "\n                                                 Artículo n\n                                             "
-                  )
-                ]),
-                _vm._v(" "),
-                _c("td", [
-                  _c("input", {
-                    staticClass: "form-control",
-                    attrs: { type: "number", value: "3" }
-                  })
-                ]),
-                _vm._v(" "),
-                _c("td", [
-                  _c("input", {
-                    staticClass: "form-control",
-                    attrs: { type: "number", value: "2" }
-                  })
-                ]),
-                _vm._v(" "),
-                _c("td", [
-                  _vm._v(
-                    "\n                                                 $ 6.00\n                                             "
-                  )
-                ])
-              ]),
-              _vm._v(" "),
-              _c("tr", { staticStyle: { "background-color": "#CEECF5" } }, [
-                _c("td", { attrs: { colspan: "4", align: "right" } }, [
-                  _c("strong", [_vm._v("Total Parcial:")])
-                ]),
-                _vm._v(" "),
-                _c("td", [_vm._v("$ 5")])
-              ]),
-              _vm._v(" "),
-              _c("tr", { staticStyle: { "background-color": "#CEECF5" } }, [
-                _c("td", { attrs: { colspan: "4", align: "right" } }, [
-                  _c("strong", [_vm._v("Total Impuesto:")])
-                ]),
-                _vm._v(" "),
-                _c("td", [_vm._v("$ 1")])
-              ]),
-              _vm._v(" "),
-              _c("tr", { staticStyle: { "background-color": "#CEECF5" } }, [
-                _c("td", { attrs: { colspan: "4", align: "right" } }, [
-                  _c("strong", [_vm._v("Total Neto:")])
-                ]),
-                _vm._v(" "),
-                _c("td", [_vm._v("$ 6")])
-              ])
-            ])
-          ]
+    return _c("td", [
+      _c(
+        "button",
+        { staticClass: "btn btn-danger btn-sm", attrs: { type: "button" } },
+        [_c("i", { staticClass: "icon-close" })]
+      )
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("tr", { staticStyle: { "background-color": "#CEECF5" } }, [
+      _c("td", { attrs: { colspan: "4", align: "right" } }, [
+        _c("strong", [_vm._v("Total Parcial:")])
+      ]),
+      _vm._v(" "),
+      _c("td", [_vm._v("$ 5")])
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("tr", { staticStyle: { "background-color": "#CEECF5" } }, [
+      _c("td", { attrs: { colspan: "4", align: "right" } }, [
+        _c("strong", [_vm._v("Total Impuesto:")])
+      ]),
+      _vm._v(" "),
+      _c("td", [_vm._v("$ 1")])
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("tr", { staticStyle: { "background-color": "#CEECF5" } }, [
+      _c("td", { attrs: { colspan: "4", align: "right" } }, [
+        _c("strong", [_vm._v("Total Neto:")])
+      ]),
+      _vm._v(" "),
+      _c("td", [_vm._v("$ 6")])
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("tr", [
+      _c("td", { attrs: { colspan: "5" } }, [
+        _vm._v(
+          "\n                                                 No hay articulos agregados\n                                             "
         )
       ])
     ])
